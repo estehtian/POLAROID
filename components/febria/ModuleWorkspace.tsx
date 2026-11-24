@@ -42,22 +42,29 @@ export default function ModuleWorkspace({moduleKey}:{moduleKey:ModuleKey}) {
   const [selectedProject,setSelectedProject] = useState("");
 
   useEffect(()=>{ setStore(loadStore()); setReady(true); },[]);
-  useEffect(()=>{ if(ready) saveStore(store); },[store,ready]);
+  useEffect(()=>{ if(ready && !saveStore(store)) setNotice("Penyimpanan browser tidak tersedia atau kapasitasnya penuh. Ekspor data penting sebagai cadangan."); },[store,ready]);
 
   const measurements = store.measurements;
   const setField = (key:keyof Measurement,value:number|string) => setMeasurement(m=>({...m,[key]:value}));
   const addMeasurement = () => {
-    const item={...measurement,id:crypto.randomUUID()};
+    const values=[measurement.chest,measurement.waist,measurement.hip,measurement.shoulder,measurement.bodyLength,measurement.sleeve,measurement.neck];
+    if(!measurement.name.trim() || values.some(value=>!Number.isFinite(value) || value<=0)) {
+      setNotice("Isi nama profil dan semua ukuran dengan angka lebih dari 0 cm.");
+      return;
+    }
+    const item={...measurement,name:measurement.name.trim(),id:crypto.randomUUID()};
     setStore(s=>({...s,measurements:[item,...s.measurements]}));
     setNotice("Profil ukuran tersimpan di browser ini.");
   };
   const addProject = () => {
-    const item:Project={id:crypto.randomUUID(),name,garment,status:"Draft",updatedAt:new Date().toISOString()};
+    if(!name.trim()) { setNotice("Nama proyek wajib diisi."); return; }
+    const item:Project={id:crypto.randomUUID(),name:name.trim(),garment,status:"Draft",updatedAt:new Date().toISOString()};
     setStore(s=>({...s,projects:[item,...s.projects]}));
     setSelectedProject(item.id); setNotice("Proyek dibuat.");
   };
   const addTask = () => {
-    const item:Task={id:crypto.randomUUID(),title:task,done:false};
+    if(!task.trim()) { setNotice("Nama tugas wajib diisi."); return; }
+    const item:Task={id:crypto.randomUUID(),title:task.trim(),done:false};
     setStore(s=>({...s,tasks:[item,...s.tasks]})); setTask(""); setNotice("Tugas ditambahkan.");
   };
   const generate = () => {
