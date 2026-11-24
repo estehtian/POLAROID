@@ -36,6 +36,7 @@ export default function ModuleWorkspace({moduleKey}:{moduleKey:ModuleKey}) {
   const [fabricLength,setFabricLength] = useState(2);
   const [task,setTask] = useState("Periksa draft pola");
   const [assistantQuestion,setAssistantQuestion] = useState("Bagaimana memulai pola kemeja?");
+  const [assistantResult,setAssistantResult] = useState<FashionAgentResult|null>(null);
   const [draft,setDraft] = useState<{width:number;height:number;svg:string}|null>(null);
   const [selectedProject,setSelectedProject] = useState("");
 
@@ -95,12 +96,23 @@ export default function ModuleWorkspace({moduleKey}:{moduleKey:ModuleKey}) {
       case "export": return <div className="space-y-4"><p className="text-sm text-slate-400">Ekspor draft pola SVG atau data profil ukuran CSV.</p><button className={buttonClass} onClick={downloadSvg}>Unduh SVG pola</button><button className={secondaryClass} onClick={()=>downloadText("febria-measurements.csv","name,chest,waist,hip,shoulder,bodyLength,sleeve,neck\\n"+measurements.map(m=>[m.name,m.chest,m.waist,m.hip,m.shoulder,m.bodyLength,m.sleeve,m.neck].join(",")).join("\\n"),"text/csv")}>Unduh CSV ukuran</button></div>;
       case "preview-3d": return <div className="rounded-xl border border-slate-800 bg-gradient-to-br from-slate-900 to-cyan-950 p-8 text-center"><div className="mx-auto flex h-64 max-w-xs items-center justify-center rounded-[45%_45%_20%_20%] border-2 border-cyan-300/70 bg-cyan-400/10 shadow-[0_0_50px_#0891b255]"><span className="text-5xl">👕</span></div><p className="mt-5 text-sm text-slate-300">Pratinjau konseptual pakaian. Bukan simulasi 3D kain.</p></div>;
       case "production": return <div className="space-y-4"><div className="flex gap-2"><input className={inputClass} value={task} onChange={e=>setTask(e.target.value)} placeholder="Nama tugas produksi"/><button className={buttonClass} onClick={addTask}>Tambah</button></div>{store.tasks.map(t=><label key={t.id} className="flex items-center gap-3 rounded-lg border border-slate-800 p-3 text-sm"><input type="checkbox" checked={t.done} onChange={e=>setStore(s=>({...s,tasks:s.tasks.map(x=>x.id===t.id?{...x,done:e.target.checked}:x)}))}/><span className={t.done?"text-slate-500 line-through":""}>{t.title}</span></label>)}</div>;
-      case "assistant": return <div className="space-y-4"><textarea className={inputClass} rows={3} value={assistantQuestion} onChange={e=>setAssistantQuestion(e.target.value)}/><div className="rounded-xl border border-slate-800 p-4 text-sm text-slate-300"><b>Saran awal</b><p className="mt-2">Mulai dari size chart dan profil ukuran. Tentukan ease berdasarkan desain dan bahan, buat draft konstruksi, lalu validasi garis, kampuh, notches, grainline, dan toile sebelum produksi. Pertanyaan: {assistantQuestion}</p></div><p className="text-xs text-slate-500">Asisten rule-based lokal, belum menggunakan model AI eksternal.</p></div>;
+      case "assistant": return <div className="space-y-4">
+        <p className="text-sm text-slate-400">Fashion Agent membantu mengarahkan pekerjaan berdasarkan panduan konstruksi dan alur produksi yang tersedia secara lokal.</p>
+        <textarea className={inputClass} rows={3} value={assistantQuestion} onChange={e=>setAssistantQuestion(e.target.value)} placeholder="Tanyakan tentang pola, ukuran, fitting, grading, kain, atau produksi"/>
+        <button className={buttonClass} onClick={()=>setAssistantResult(runFashionAgent(assistantQuestion))}>Analisis pertanyaan</button>
+        {assistantResult && <div className="space-y-4 rounded-xl border border-cyan-900/70 bg-cyan-950/20 p-4 text-sm text-slate-200">
+          <div className="flex flex-wrap items-center justify-between gap-2"><b className="text-base text-cyan-200">{assistantResult.title}</b><span className="rounded-full border border-cyan-800 px-2 py-1 text-[10px] uppercase tracking-wider text-cyan-300">Local rules · {assistantResult.intent}</span></div>
+          <p>{assistantResult.answer}</p>
+          <div><b className="text-slate-100">Langkah yang disarankan</b><ol className="mt-2 list-decimal space-y-2 pl-5 text-slate-300">{assistantResult.steps.map((step,i)=><li key={i}>{step}</li>)}</ol></div>
+          <div><b className="text-amber-300">Batasan dan validasi</b><ul className="mt-2 list-disc space-y-1 pl-5 text-slate-400">{assistantResult.warnings.map((warning,i)=><li key={i}>{warning}</li>)}</ul></div>
+        </div>}
+        <p className="text-xs text-slate-500">Status: rule-based lokal aktif. Belum terhubung ke LLM eksternal, web research, sub-agent, atau database.</p>
+      </div>;
       case "projects": return <div className="space-y-4"><div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]"><input className={inputClass} value={name} onChange={e=>setName(e.target.value)} placeholder="Nama proyek"/><select className={inputClass} value={garment} onChange={e=>setGarment(e.target.value)}><option>Kemeja</option><option>Blus</option><option>Rok</option><option>Celana</option><option>Dress</option></select><button className={buttonClass} onClick={addProject}>Buat proyek</button></div>{store.projects.map(p=><div key={p.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-800 p-3"><div><b>{p.name}</b><p className="text-xs text-slate-400">{p.garment} · {p.status}</p></div><button className={secondaryClass} onClick={()=>setSelectedProject(p.id)}>Pilih</button></div>)}</div>;
       case "admin": return <div className="grid gap-3 sm:grid-cols-3">{[{label:"Profil ukuran",value:store.measurements.length},{label:"Proyek",value:store.projects.length},{label:"Tugas",value:store.tasks.length}].map(x=><div key={x.label} className="rounded-xl border border-slate-800 p-4"><p className="text-sm text-slate-400">{x.label}</p><p className="mt-2 text-3xl font-bold text-cyan-300">{x.value}</p></div>)}<p className="text-xs text-slate-500 sm:col-span-3">Panel ringkasan lokal. Pengelolaan pengguna/role membutuhkan Auth dan kebijakan server-side.</p></div>;
       default: return <p>Modul belum tersedia.</p>;
     }
-  },[moduleKey,measurement,measurements,ease,grade,fabricWidth,fabricLength,task,assistantQuestion,draft,store,name,garment,selectedProject]);
+  },[moduleKey,measurement,measurements,ease,grade,fabricWidth,fabricLength,task,assistantQuestion,assistantResult,draft,store,name,garment,selectedProject]);
 
   if(!ready) return <div className="p-8 text-slate-400">Memuat FEBRIA Workspace…</div>;
   return <div className="mx-auto max-w-6xl space-y-6">
