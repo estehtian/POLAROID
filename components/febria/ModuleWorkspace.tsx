@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
-  MODULES, ModuleKey, ModuleDefinition,
-  Measurement, Project, Task, Garment,
+  MODULES, type ModuleKey,
+  type Measurement, type Project, type Task,
   loadStore, saveStore, defaultStore,
 } from "@/lib/febria/store";
 import {
   buildBodiceDraft, calculateEase, gradeMeasurement,
-  estimateFabric, downloadText, escapeXml,
+  estimateFabric, downloadText,
 } from "@/lib/febria/engines";
 
 type Store = ReturnType<typeof defaultStore>;
@@ -42,7 +42,6 @@ export default function ModuleWorkspace({moduleKey}:{moduleKey:ModuleKey}) {
   useEffect(()=>{ setStore(loadStore()); setReady(true); },[]);
   useEffect(()=>{ if(ready) saveStore(store); },[store,ready]);
 
-  const project = store.projects.find(p=>p.id===selectedProject) ?? store.projects[0];
   const measurements = store.measurements;
   const setField = (key:keyof Measurement,value:number|string) => setMeasurement(m=>({...m,[key]:value}));
   const addMeasurement = () => {
