@@ -24,7 +24,11 @@ This document describes the code currently present in this repository branch. A 
 
 - Fixed the invalid `Garment` type import in `ModuleWorkspace.tsx` and removed unused imports/variable.
 - Added `lib/febria/agent.ts`, a deterministic local Fashion Agent with intent classification, actionable steps, and explicit limitations.
-- Connected the assistant workspace UI to the local agent.
+- Connected the assistant workspace UI to the local agent and corrected its missing module/type import.
+- Applied the Generator ease input to the draft block calculation.
+- Added positive-value validation for saved measurement profiles, project names, and production task names.
+- Hardened browser-store loading against malformed or partial localStorage data while retaining the existing storage key.
+- Corrected CSV quoting/newline output and improved the SVG download lifecycle; SVG physical dimensions now reflect the draft viewBox scale.
 - Reworked `app/workspace/page.tsx` into a capability dashboard; module count is read from `MODULES.length`, not hard-coded.
 - Added `docs/ARCHITECTURE-FEBRIA-CORE-3000.md` to define the target architecture and phased integration plan.
 
