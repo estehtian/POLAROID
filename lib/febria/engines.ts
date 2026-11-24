@@ -12,9 +12,12 @@ export function estimateFabric(widthCm:number,lengthM:number) {
 export function escapeXml(value:string) {
   return value.replace(/[<>&'"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;","'":"&apos;",'"':"&quot;"}[c]!));
 }
-export function buildBodiceDraft(m:Measurement) {
-  const width=Math.max(20,Math.round((m.chest/4+4)*10)/10);
-  const height=Math.max(30,Math.round(m.bodyLength*10)/10);
+export function buildBodiceDraft(m:Measurement, ease=0) {
+  const chest=Number.isFinite(m.chest) ? Math.max(0,m.chest) : 0;
+  const bodyLength=Number.isFinite(m.bodyLength) ? Math.max(0,m.bodyLength) : 0;
+  const safeEase=Number.isFinite(ease) ? ease : 0;
+  const width=Math.max(20,Math.round((chest/4+safeEase/4+4)*10)/10);
+  const height=Math.max(30,Math.round(bodyLength*10)/10);
   const w=width*8, h=height*8;
   const neckW=Math.max(24,m.neck*1.2), shoulder=m.shoulder*2.5;
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w+80} ${h+80}" width="${w+80}" height="${h+80}">
