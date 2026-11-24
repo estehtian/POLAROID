@@ -25,6 +25,7 @@ export type Project = {id:string;name:string;garment:string;status:string;update
 export type Task = {id:string;title:string;done:boolean};
 export type Store = {measurements:Measurement[];projects:Project[];tasks:Task[];lastDraft?:{width:number;height:number;svg:string}};
 const KEY="febria-core-3000-store-v1";
+
 export function defaultStore():Store {
   return {
     measurements:[],
@@ -32,15 +33,57 @@ export function defaultStore():Store {
     tasks:[],
   };
 }
+
+function isRecord(value:unknown):value is Record<string,unknown> {
+  return typeof value==="object" && value!==null && !Array.isArray(value);
+}
+function isMeasurement(value:unknown):value is Measurement {
+  if(!isRecord(value)) return false;
+  return typeof value.id==="string" && typeof value.name==="string" &&
+    typeof value.garment==="string" && value.unit==="cm" &&
+    ["chest","waist","hip","shoulder","bodyLength","sleeve","neck"].every(
+      key=>typeof value[key]==="number" && Number.isFinite(value[key])
+    );
+}
+function isProject(value:unknown):value is Project {
+  return isRecord(value) && typeof value.id==="string" && typeof value.name==="string" &&
+    typeof value.garment==="string" && typeof value.status==="string" &&
+    typeof value.updatedAt==="string";
+}
+function isTask(value:unknown):value is Task {
+  return isRecord(value) && typeof value.id==="string" &&
+    typeof value.title==="string" && typeof value.done==="boolean";
+}
+
 export function loadStore():Store {
   if(typeof window==="undefined") return defaultStore();
   try {
     const raw=window.localStorage.getItem(KEY);
     if(!raw) return defaultStore();
-    const parsed=JSON.parse(raw) as Store;
-    return {...defaultStore(),...parsed};
-  } catch { return defaultStore(); }
+    const parsed:unknown=JSON.parse(raw);
+    if(!isRecord(parsed)) return defaultStore();
+    const base=defaultStore();
+    const measurements=Array.isArray(parsed.measurements) ? parsed.measurements.filter(isMeasurement) : base.measurements;
+    const projects=Array.isArray(parsed.projects) ? parsed.projects.filter(isProject) : base.projects;
+    const tasks=Array.isArray(parsed.tasks) ? parsed.tasks.filter(isTask) : base.tasks;
+    const candidate=parsed.lastDraft;
+    const lastDraft=isRecord(candidate) && typeof candidate.width==="number" &&
+      Number.isFinite(candidate.width) && typeof candidate.height==="number" &&
+      Number.isFinite(candidate.height) && typeof candidate.svg==="string"
+      ? {width:candidate.width,height:candidate.height,svg:candidate.svg}
+      : undefined;
+    return {...base,measurements,projects,tasks,...(lastDraft ? {lastDraft}:{})};
+  } catch {
+    return defaultStore();
+  }
 }
-export function saveStore(store:Store) {
-  if(typeof window!=="undefined") window.localStorage.setItem(KEY,JSON.stringify(store));
+
+export function saveStore(store:Store):boolean {
+  if(typeof window==="undefined") return false;
+  try {
+    window.localStorage.setItem(KEY,JSON.stringify(store));
+    return true;
+  } catch {
+    return false;
+  }
 }
