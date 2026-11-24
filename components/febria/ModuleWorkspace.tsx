@@ -11,6 +11,7 @@ import {
   buildBodiceDraft, calculateEase, gradeMeasurement,
   estimateFabric, downloadText,
 } from "@/lib/febria/engines";
+import {runFashionAgent, type FashionAgentResult} from "@/lib/febria/agent";
 
 type Store = ReturnType<typeof defaultStore>;
 
