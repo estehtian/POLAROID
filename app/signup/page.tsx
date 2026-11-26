@@ -8,7 +8,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
       <p className="text-xs font-bold tracking-[.25em] text-cyan-400">FEBRIA CORE 3000</p>
       <h1 className="mt-3 text-3xl font-bold">Buat akun</h1>
       <p className="mt-2 text-sm text-slate-400">Daftar untuk menyimpan dan mengelola proyek fashion Anda.</p>
-      {params.error && <p role="alert" className="mt-4 rounded-lg border border-rose-900 bg-rose-950/40 p-3 text-sm text-rose-200">Data belum valid atau pendaftaran gagal. Password minimal 8 karakter.</p>}
+      {params.error && <p role="alert" className="mt-4 rounded-lg border border-rose-900 bg-rose-950/40 p-3 text-sm text-rose-200">{params.error === "site-url-not-configured" ? "NEXT_PUBLIC_SITE_URL belum diatur pada environment aplikasi." : "Data belum valid atau pendaftaran gagal. Password minimal 8 karakter."}</p>}
       {params.message === "check-email" && <p role="status" className="mt-4 rounded-lg border border-emerald-900 bg-emerald-950/40 p-3 text-sm text-emerald-200">Pendaftaran diterima. Periksa email untuk menyelesaikan verifikasi jika konfirmasi email diaktifkan.</p>}
       <form action={signupAction} className="mt-6 space-y-4">
         <label className="block text-sm text-slate-300">Nama lengkap<input required name="full_name" autoComplete="name" maxLength={100} className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-3 text-white" /></label>
