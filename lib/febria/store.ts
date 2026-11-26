@@ -1,7 +1,7 @@
 export type ModuleKey =
   | "measurements" | "generator" | "editor" | "library" | "fit-studio"
   | "grading" | "fabric" | "export" | "preview-3d" | "production"
-  | "assistant" | "projects" | "admin";
+  | "assistant" | "projects" | "admin" | "visual-studio";
 
 export type ModuleDefinition = {key:ModuleKey;title:string;description:string;href:string};
 export const MODULES:ModuleDefinition[] = [
@@ -9,7 +9,7 @@ export const MODULES:ModuleDefinition[] = [
   {key:"generator",title:"AI Pattern Generator",description:"Pembuatan draft pola parametrik dasar.",href:"/workspace/generator"},
   {key:"editor",title:"Pattern Editor",description:"Pengelolaan draft dan file pola.",href:"/workspace/editor"},
   {key:"library",title:"Garment Library",description:"Referensi dasar konstruksi pakaian.",href:"/workspace/library"},
-  {key:"fit-studio",title:"Fit Studio",description:"Perhitungan ease dan target ukuran pakaian.",href:"/workspace/fit-studio"},
+  {key:"fit-studio",title:"Fit Studio",description:"Perhitungan ease dan target ukuran.",href:"/workspace/fit-studio"},
   {key:"grading",title:"Pattern Grading",description:"Tabel ukuran bertingkat berbasis aturan.",href:"/workspace/grading"},
   {key:"fabric",title:"Fabric & Marker",description:"Estimasi luas dan konsumsi kain.",href:"/workspace/fabric"},
   {key:"export",title:"Export Center",description:"Ekspor draft SVG dan data CSV.",href:"/workspace/export"},
@@ -18,6 +18,7 @@ export const MODULES:ModuleDefinition[] = [
   {key:"assistant",title:"AI Fashion Assistant",description:"Panduan rule-based pengembangan pola.",href:"/workspace/assistant"},
   {key:"projects",title:"Project Manager",description:"Pembuatan dan pemilihan proyek lokal.",href:"/workspace/projects"},
   {key:"admin",title:"Admin Management",description:"Ringkasan aktivitas lokal.",href:"/workspace/admin"},
+  {key:"visual-studio",title:"Visual Fashion Studio",description:"Ruang kerja konsep visual dan virtual try-on (preview saja).",href:"/workspace/visual-studio"},
 ];
 
 export type Measurement = {id:string;name:string;garment:string;chest:number;waist:number;hip:number;shoulder:number;bodyLength:number;sleeve:number;neck:number;unit:"cm"};
