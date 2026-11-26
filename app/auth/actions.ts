@@ -26,11 +26,17 @@ export async function signupAction(formData: FormData) {
   const fullName = String(formData.get("full_name") ?? "").trim();
   if (!email || password.length < 8 || !fullName) redirect("/signup?error=invalid-fields");
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!siteUrl) redirect("/signup?error=site-url-not-configured");
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName } },
+    options: {
+      data: { full_name: fullName },
+      emailRedirectTo: new URL("/auth/callback", siteUrl).toString(),
+    },
   });
   if (error) redirect("/signup?error=signup-failed");
   redirect("/signup?message=check-email");
