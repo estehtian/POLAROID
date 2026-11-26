@@ -1,14 +1,24 @@
 import Link from "next/link";
 import type {ReactNode} from "react";
 import {MODULES} from "@/lib/febria/store";
+import {createClient} from "@/lib/supabase/server";
+import {logoutAction} from "@/app/auth/actions";
 
-export default function WorkspaceLayout({children}:{children:ReactNode}) {
+export default async function WorkspaceLayout({children}:{children:ReactNode}) {
+  const supabase = await createClient();
+  const {data:{user}} = await supabase.auth.getUser();
+
   return <div className="min-h-screen bg-[#050b12] text-white md:flex">
     <aside className="w-full shrink-0 border-b border-cyan-950 bg-[#08131e] p-4 md:min-h-screen md:w-72 md:border-b-0 md:border-r">
       <Link href="/workspace" className="block">
         <div className="text-xl font-black tracking-widest text-cyan-300">FEBRIA</div>
         <div className="text-[10px] tracking-[.3em] text-slate-400">AI PATTERN · CORE 3000</div>
       </Link>
+      <div className="mt-5 rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+        <p className="truncate text-xs font-medium text-slate-200">{user?.user_metadata?.full_name || user?.email || "Akun FEBRIA"}</p>
+        <p className="mt-1 text-[10px] text-slate-500">Signed in</p>
+        <form action={logoutAction} className="mt-3"><button className="text-xs text-cyan-300 hover:text-cyan-100">Logout</button></form>
+      </div>
       <p className="mb-2 mt-7 text-[10px] font-bold uppercase tracking-[.25em] text-slate-500">Engineering modules</p>
       <nav className="grid grid-cols-2 gap-1 md:grid-cols-1">
         {MODULES.map(m=><Link key={m.key} href={m.href} className="rounded-lg px-3 py-2 text-xs text-slate-300 hover:bg-cyan-950/60 hover:text-cyan-200">{m.title}</Link>)}
