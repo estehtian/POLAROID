@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test lib/febria/dxf.test.ts"
   },
   "dependencies": {
     "next": "15.5.9",
@@ -20,6 +21,7 @@
     "autoprefixer": "10.4.21",
     "postcss": "8.5.6",
     "tailwindcss": "3.4.17",
+    "tsx": "4.20.6",
     "typescript": "5.9.3"
   }
 }

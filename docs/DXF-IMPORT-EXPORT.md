@@ -1,22 +1,26 @@
-# DXF Import / Export
+# FEBRIA DXF interchange
 
-Available at `/workspace/dxf-studio` on `main`.
+## Supported functionality
 
-## Supported
+- Browser-local ASCII DXF import and R12 ASCII DXF export.
+- Supported planar entities: `LINE`, `LWPOLYLINE` without bulge arcs, `CIRCLE`, and `ARC`.
+- Unit recognition via `$INSUNITS` (mm/cm/m/inch); user-selectable fallback if missing/unsupported.
+- Coordinates normalize to millimetres internally and can be exported to a selected unit.
+- Limits: 5 MiB file, 20,000 entities, and 100,000 polyline vertices.
+- Unsupported entity types are reported and omitted. Bulge polylines are rejected because silently flattening curves would change geometry.
+- No binary DXF, legacy POLYLINE, SPLINE, INSERT/BLOCK, HATCH, DIMENSION, TEXT, 3D, edit, or production validation.
 
-- ASCII DXF import up to 5 MB and 20,000 entities.
-- `LINE`, `LWPOLYLINE`, `CIRCLE`, and `ARC`.
-- `$INSUNITS`: mm, cm, m, and inch. Unsupported/missing units default to mm.
-- Geometry preview, entity summary, and local export.
-- ASCII DXF R12 output with selected units.
+## Run and test
 
-## Limitations
+```bash
+npm install
+npm run typecheck
+npm test
+npm run build
+```
 
-- No binary DXF, SPLINE, HATCH, INSERT/BLOCK, DIMENSION, TEXT, 3D, bulges, or legacy POLYLINE handling.
-- Unsupported entities are omitted from export.
-- No pattern editing or production validation.
-- Verify unit and 1:1 scale in CAD and with a qualified pattern maker.
+The sample `docs/fixtures/febria-dxf-sample.dxf` can be loaded in `/workspace/dxf-studio`.
 
-## Verification status
+## CAD verification
 
-Static source inspection only. The repository does not contain an audited root package manifest, so build/browser/CAD interoperability tests remain pending.
+Open the exported file in a CAD application and measure a known dimension. Confirm the selected units and 1:1 scale before any print or manufacturing workflow. This feature is an interchange utility, not a production pattern certification.
