@@ -1,7 +1,7 @@
 export type ModuleKey =
   | "measurements" | "generator" | "editor" | "library" | "fit-studio"
   | "grading" | "fabric" | "export" | "preview-3d" | "production"
-  | "assistant" | "projects" | "admin" | "visual-studio";
+  | "assistant" | "projects" | "admin" | "visual-studio" | "dxf-studio";
 
 export type ModuleDefinition = {key:ModuleKey;title:string;description:string;href:string};
 export const MODULES:ModuleDefinition[] = [
@@ -19,6 +19,7 @@ export const MODULES:ModuleDefinition[] = [
   {key:"projects",title:"Project Manager",description:"Pembuatan dan pemilihan proyek lokal.",href:"/workspace/projects"},
   {key:"admin",title:"Admin Management",description:"Ringkasan aktivitas lokal.",href:"/workspace/admin"},
   {key:"visual-studio",title:"Visual Fashion Studio",description:"Ruang kerja konsep visual dan virtual try-on (preview saja).",href:"/workspace/visual-studio"},
+  {key:"dxf-studio",title:"DXF Import / Export",description:"Impor, pratinjau, dan ekspor entitas geometri DXF 2D.",href:"/workspace/dxf-studio"},
 ];
 
 export type Measurement = {id:string;name:string;garment:string;chest:number;waist:number;hip:number;shoulder:number;bodyLength:number;sleeve:number;neck:number;unit:"cm"};
