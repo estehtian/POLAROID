@@ -1,2 +1,11 @@
-# Google App Engine generated folder
+node_modules/
+.next/
+out/
+build/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
 appengine-generated/
