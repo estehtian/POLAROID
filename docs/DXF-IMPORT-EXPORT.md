@@ -1,24 +1,22 @@
-# FEBRIA DXF interchange — status and verification
+# DXF Import / Export
 
-DXF Import / Export is available at `/workspace/dxf-studio` and in the workspace module registry.
+Available at `/workspace/dxf-studio` on `main`.
 
-## Supported behavior
+## Supported
 
-- Browser-local import of ASCII DXF files up to 5 MB / 20,000 entities.
-- Supported entities: `LINE`, `LWPOLYLINE`, `CIRCLE`, and `ARC`.
-- Imported coordinates normalize to millimetres using `$INSUNITS` (mm/cm/m/inch); missing or unsupported units default to mm and must be checked by the user.
-- Geometry preview and a summary table are provided.
-- Export writes AutoCAD R12 ASCII DXF with an explicit `$INSUNITS`, selected output units, and the supported entities.
-- Unsupported DXF entities are reported and omitted on export. This is not a round-trip-preserving editor.
+- ASCII DXF import up to 5 MB and 20,000 entities.
+- `LINE`, `LWPOLYLINE`, `CIRCLE`, and `ARC`.
+- `$INSUNITS`: mm, cm, m, and inch. Unsupported/missing units default to mm.
+- Geometry preview, entity summary, and local export.
+- ASCII DXF R12 output with selected units.
 
-## Known limitations and safe use
+## Limitations
 
-- No binary DXF, SPLINE, INSERT/BLOCK, HATCH, DIMENSION, TEXT, 3D entities, bulge curves, or legacy `POLYLINE` sequences.
-- Layer names are retained for supported entities; blocks, styles, linetypes, and entity metadata are not.
-- There is no edit, pattern grading, or geometry repair feature.
-- Import/export runs in the browser; files are not uploaded or persisted.
-- This capability is CAD interchange scaffolding, not production-ready pattern engineering. Verify units and 1:1 print scale in a CAD application and review the pattern with a qualified pattern maker.
+- No binary DXF, SPLINE, HATCH, INSERT/BLOCK, DIMENSION, TEXT, 3D, bulges, or legacy POLYLINE handling.
+- Unsupported entities are omitted from export.
+- No pattern editing or production validation.
+- Verify unit and 1:1 scale in CAD and with a qualified pattern maker.
 
 ## Verification status
 
-Static source inspection only. The repository has no root JavaScript package manifest/lockfile in the inspected tree, so typecheck, application build, browser tests, and CAD interoperability tests have not been run. The sample DXF at `docs/fixtures/febria-dxf-sample.dxf` can be used after restoring the full application environment.
+Static source inspection only. The repository does not contain an audited root package manifest, so build/browser/CAD interoperability tests remain pending.
